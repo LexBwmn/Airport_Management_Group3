@@ -1,0 +1,9 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/.vs
+/AirportManager/obj
+/obj
+/bin/Debug
+/AirportManager/bin/Debug/net10.0
