@@ -148,43 +148,14 @@ Fly-Away/
 ├── Dockerfile
 └── README.md
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+screenshots of the App:
 
 <img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/e90c6c29-1671-496d-b7c3-b244496f127e" />
+
 <img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/7aecf063-5257-4bc6-9dde-b81d51476e77" />
+
 <img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/f6b22451-892d-4e49-9ebd-e66fede65469" />
+
 <img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/bda6b2be-a1dd-4c97-a860-3eda247737fc" />
+
 <img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/cd6bba27-d6df-4f79-b89b-b24c9a68ed61" />
