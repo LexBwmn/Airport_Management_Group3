@@ -1,0 +1,56 @@
+﻿@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor HttpContextAccessor
+
+@{
+    var isLoggedIn = HttpContextAccessor.HttpContext?.Session.GetInt32("AccountId") != null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Fly_Away</title>
+
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body>
+    <header class="nav">
+        <div class="nav-inner">
+            <a class="brand" href="/">Fly_Away</a>
+
+            <nav class="nav-links">
+                <a href="/">Home</a>
+                <a href="/" >Flights</a>
+
+                @if (isLoggedIn)
+                {
+                    <a href="/BookingsPage/MyBookings">My Bookings</a>
+
+                    <form class="nav-form" method="post" action="/AuthPage/Logout">
+                        <button class="btn btn-ghost" type="submit">Logout</button>
+                    </form>
+                }
+                else
+                {
+                    <a class="btn btn-ghost" href="/AuthPage/Login">Login</a>
+                    <a class="btn" href="/AuthPage/Register">Register</a>
+                }
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+        @RenderBody()
+    </main>
+
+    <footer class="footer">
+        <div class="container footer-inner">
+            <span>© @DateTime.Now.Year - Fly_Away</span>
+            <a href="/Home/Privacy">Privacy</a>
+        </div>
+    </footer>
+
+    @RenderSection("Scripts", required: false)
+</body>
+</html>

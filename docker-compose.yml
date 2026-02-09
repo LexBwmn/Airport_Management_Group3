@@ -1,6 +1,0 @@
-services:
-  airportmanager:
-    image: ${DOCKER_REGISTRY-}airportmanager
-    build:
-      context: .
-      dockerfile: AirportManager/Dockerfile

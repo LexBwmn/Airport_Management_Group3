@@ -1,0 +1,26 @@
+﻿@model Fly_Away.ViewModels.FlightDetailsViewModel
+
+<h2>Flight Details</h2>
+
+<p><b>Airline:</b> @Model.AirlineName</p>
+<p><b>From:</b> @Model.SourceName</p>
+<p><b>To:</b> @Model.DestinationName</p>
+<p><b>Departure:</b> @Model.DateDeparture @Model.TimeDeparture</p>
+<p><b>Arrival:</b> @Model.DateArrival @Model.TimeArrival</p>
+
+<hr />
+
+<h3>Choose Class</h3>
+
+@foreach (var c in Model.Classes)
+{
+    <form method="post" action="/BookingsPage/Create">
+        <input type="hidden" name="flight_ID" value="@Model.Flight_ID" />
+        <input type="hidden" name="flightClass_ID" value="@c.FlightClass_ID" />
+        <p>
+            <b>@c.SeatType</b> — Baggage: @c.BaggageSize
+            <button type="submit">Book</button>
+        </p>
+    </form>
+}
+

@@ -1,0 +1,56 @@
+﻿@model List<Fly_Away.ViewModels.FlightViewModel>
+@{
+    ViewData["Title"] = "Home";
+}
+
+<section class="hero">
+    <div class="hero-left">
+        <h1>Book flights fast.</h1>
+        <p>
+            Choose a flight, pick Economy/Business/First, and instantly generate your ticket PNG.
+        </p>
+
+        <div class="hero-actions">
+            <a class="btn" href="/" >Browse Flights</a>
+            <a class="btn btn-ghost" href="/BookingsPage/MyBookings">My Bookings</a>
+        </div>
+    </div>
+
+</section>
+
+<section class="card">
+    <div class="card-header">
+        <h2>Available Flights</h2>
+        <p class="muted">Click View to see details and book.</p>
+    </div>
+
+    <div class="table-wrap">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Airline</th>
+                    <th>From</th>
+                    <th>To</th>
+                    <th>Date</th>
+                    <th>Time</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+            @foreach (var f in Model)
+            {
+                <tr>
+                    <td>@f.AirlineName</td>
+                    <td>@f.SourceName</td>
+                    <td>@f.DestinationName</td>
+                    <td>@f.DateDeparture</td>
+                    <td>@f.TimeDeparture</td>
+                    <td class="right">
+                        <a class="btn btn-small" href="/FlightsPage/Details/@f.Flight_ID">View</a>
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+</section>

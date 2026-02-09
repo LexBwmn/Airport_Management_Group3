@@ -1,9 +1,25 @@
-﻿################################################################################
-# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
-################################################################################
+# ===== Visual Studio =====
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
 
-/.vs
-/AirportManager/obj
-/obj
-/bin/Debug
-/AirportManager/bin/Debug/net10.0
+# ===== Build Output =====
+**/bin/
+**/obj/
+
+# ===== ASP.NET =====
+appsettings.Development.json
+appsettings.Local.json
+
+# ===== Logs =====
+*.log
+
+# ===== OS =====
+.DS_Store
+Thumbs.db
+
+# ===== Docker =====
+*.env
+.env

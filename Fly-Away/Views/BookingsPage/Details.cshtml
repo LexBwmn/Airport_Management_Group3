@@ -1,0 +1,60 @@
+﻿@model Fly_Away.Models.Ticket
+
+<h2>Booking Details</h2>
+
+<p><b>Ticket ID:</b> @Model.Ticket_ID</p>
+<p><b>Barcode:</b> @Model.Barcode</p>
+
+<hr />
+
+<p><b>Airline:</b> @Model.Flight!.Airline!.Name</p>
+<p><b>From:</b> @Model.Flight!.Source!.Name</p>
+<p><b>To:</b> @Model.Flight!.Destination!.Name</p>
+
+<p><b>Departure:</b> @Model.Flight!.DateDeparture @Model.Flight!.TimeDeparture</p>
+<p><b>Arrival:</b> @Model.Flight!.DateArrival @Model.Flight!.TimeArrival</p>
+
+<hr />
+
+<p><b>Class:</b> @Model.FlightClass!.SeatType</p>
+<p><b>Baggage:</b> @Model.FlightClass!.BaggageSize</p>
+
+<p><b>Seat:</b> @Model.Seat!.SeatNum (@Model.Seat!.SeatType)</p>
+<p><b>Gate:</b> @Model.Gate!.Status</p>
+
+<hr />
+
+@if (!string.IsNullOrWhiteSpace(Model.TicketImageUrl))
+{
+    <p><b>Ticket PNG:</b> <a href="@Model.TicketImageUrl" target="_blank">Open</a></p>
+    <img src="@Model.TicketImageUrl" style="max-width:500px;border:1px solid #ccc;" />
+}
+else
+{
+    <p><b>Ticket PNG:</b> Not generated</p>
+}
+
+<hr />
+<a href="/BookingsPage/MyBookings">⬅ Back to My Bookings</a>
+
+<hr />
+<h3>Manage Booking</h3>
+
+<form method="post" action="/BookingsPage/Cancel/@Model.Ticket_ID" onsubmit="return confirm('Cancel this booking?');">
+    <button type="submit">Cancel Booking</button>
+</form>
+
+<br />
+
+<form method="post" action="/BookingsPage/ChangeClass">
+    <input type="hidden" name="ticketId" value="@Model.Ticket_ID" />
+
+    <label>Change Class:</label>
+    <select name="flightClassId">
+        <option value="1">Economy</option>
+        <option value="2">Business</option>
+        <option value="3">First</option>
+    </select>
+
+    <button type="submit">Update</button>
+</form>

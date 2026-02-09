@@ -1,0 +1,23 @@
+﻿@model Fly_Away.DTOs.RegisterRequest
+
+<h2>Register</h2>
+
+@if (ViewBag.Error != null)
+{
+    <p style="color:red">@ViewBag.Error</p>
+}
+
+<form method="post">
+    <label>Email:</label><br />
+    <input name="Email" /><br /><br />
+
+    <label>Password:</label><br />
+    <input name="Password" type="password" /><br /><br />
+
+    <button type="submit">Register</button>
+</form>
+
+<p>
+    Already have an account?
+    <a href="/AuthPage/Login">Login</a>
+</p>
