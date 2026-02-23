@@ -20,6 +20,7 @@ public class FlightsController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<List<FlightDto>>> GetAll()
     {
+        // Optimization: limit results to reduce payload + DB/serialization work under load
         var flights = await _db.Flights
             .AsNoTracking()
             .Include(f => f.Source)
@@ -27,6 +28,7 @@ public class FlightsController : ControllerBase
             .Include(f => f.Airline)
             .OrderBy(f => f.DateDeparture)
             .ThenBy(f => f.TimeDeparture)
+            .Take(50)
             .Select(f => new FlightDto
             {
                 Flight_ID = f.Flight_ID,
