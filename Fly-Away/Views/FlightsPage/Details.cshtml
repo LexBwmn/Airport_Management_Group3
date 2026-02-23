@@ -1,26 +1,147 @@
 ﻿@model Fly_Away.ViewModels.FlightDetailsViewModel
 
-<h2>Flight Details</h2>
+<h2 class="mb-3">Flight Details</h2>
 
-<p><b>Airline:</b> @Model.AirlineName</p>
-<p><b>From:</b> @Model.SourceName</p>
-<p><b>To:</b> @Model.DestinationName</p>
-<p><b>Departure:</b> @Model.DateDeparture @Model.TimeDeparture</p>
-<p><b>Arrival:</b> @Model.DateArrival @Model.TimeArrival</p>
+<div class="mb-3">
+    <p><b>Airline:</b> @Model.AirlineName</p>
+    <p><b>From:</b> @Model.SourceName</p>
+    <p><b>To:</b> @Model.DestinationName</p>
+    <p><b>Departure:</b> @Model.DateDeparture @Model.TimeDeparture</p>
+    <p><b>Arrival:</b> @Model.DateArrival @Model.TimeArrival</p>
+</div>
 
 <hr />
 
-<h3>Choose Class</h3>
+<h3 class="mt-3 mb-2">Passenger Information</h3>
 
-@foreach (var c in Model.Classes)
-{
-    <form method="post" action="/BookingsPage/Create">
-        <input type="hidden" name="flight_ID" value="@Model.Flight_ID" />
-        <input type="hidden" name="flightClass_ID" value="@c.FlightClass_ID" />
-        <p>
-            <b>@c.SeatType</b> — Baggage: @c.BaggageSize
-            <button type="submit">Book</button>
-        </p>
-    </form>
-}
+<p class="text-muted mb-3">
+    Please enter passenger details before booking.
+</p>
 
+<div class="card bg-transparent border-secondary mb-4">
+    <div class="card-body p-4">
+
+        <!-- ✅ SAME layout as Manage page -->
+        <div class="fly-form-grid">
+
+            <div class="fly-field">
+                <label class="form-label">Passenger Name</label>
+                <input id="PassengerName"
+                       class="form-control form-control-sm"
+                       type="text"
+                       placeholder="e.g., John Smith"
+                       required
+                       maxlength="60"
+                       pattern="^[A-Za-z][A-Za-z\s'\-]{1,59}$"
+                       title="Letters/spaces only (2–60). Example: John Smith" />
+            </div>
+
+            <div class="fly-field">
+                <label class="form-label">Email</label>
+                <input id="Email"
+                       class="form-control form-control-sm"
+                       type="email"
+                       placeholder="e.g., john@email.com"
+                       required
+                       maxlength="100" />
+            </div>
+
+            <div class="fly-field">
+                <label class="form-label">Phone Number</label>
+                <input id="PhoneNumber"
+                       class="form-control form-control-sm"
+                       type="tel"
+                       inputmode="tel"
+                       placeholder="e.g., +1 519-123-4567"
+                       required
+                       maxlength="20"
+                       pattern="^[0-9+\-\s()]{7,20}$"
+                       title="Allowed: digits, space, +, -, (, ). Length 7–20."
+                       oninput="filterPhone(this)" />
+                <small class="text-muted">Digits/spaces + ( ) - allowed.</small>
+            </div>
+
+            <div class="fly-field">
+                <label class="form-label">Passport Number</label>
+                <input id="PassportNumber"
+                       class="form-control form-control-sm"
+                       type="text"
+                       placeholder="e.g., A12345678"
+                       required
+                       maxlength="20"
+                       pattern="^[A-Za-z0-9]{5,20}$"
+                       title="Letters+numbers only (5–20)."
+                       oninput="filterPassport(this)" />
+                <small class="text-muted">Letters + numbers only (5–20).</small>
+            </div>
+
+        </div>
+
+        <div id="passengerWarn" class="text-danger small mt-3" style="display:none;">
+            Please fill all passenger fields correctly before booking.
+        </div>
+
+    </div>
+</div>
+
+<hr />
+
+<h3 class="mt-3 mb-2">Choose Class</h3>
+
+<div class="d-flex flex-column gap-2">
+    @foreach (var c in Model.Classes)
+    {
+        <form method="post"
+              action="/BookingsPage/Create"
+              onsubmit="return attachPassengerToForm(this);"
+              class="d-flex align-items-center justify-content-between flex-wrap gap-2 border-bottom pb-2">
+
+            <input type="hidden" name="flight_ID" value="@Model.Flight_ID" />
+            <input type="hidden" name="flightClass_ID" value="@c.FlightClass_ID" />
+
+            <!-- these will be populated by JS on submit -->
+            <input type="hidden" name="PassengerName" />
+            <input type="hidden" name="Email" />
+            <input type="hidden" name="PhoneNumber" />
+            <input type="hidden" name="PassportNumber" />
+
+            <div>
+                <b>@c.SeatType</b> — Baggage: @c.BaggageSize
+            </div>
+
+            <button type="submit" class="btn btn-outline-light btn-sm">Book</button>
+        </form>
+    }
+</div>
+
+<script>
+    function filterPhone(el) {
+        el.value = el.value.replace(/[^0-9+\-\s()]/g, "");
+    }
+
+    function filterPassport(el) {
+        el.value = el.value.replace(/[^A-Za-z0-9]/g, "");
+    }
+
+    function attachPassengerToForm(form) {
+        const name = document.getElementById("PassengerName");
+        const email = document.getElementById("Email");
+        const phone = document.getElementById("PhoneNumber");
+        const passport = document.getElementById("PassportNumber");
+        const warn = document.getElementById("passengerWarn");
+
+        if (!name.reportValidity() || !email.reportValidity() || !phone.reportValidity() || !passport.reportValidity()) {
+            warn.style.display = "block";
+            return false;
+        }
+
+        warn.style.display = "none";
+
+        form.querySelector('input[name="PassengerName"]').value = name.value.trim();
+        form.querySelector('input[name="Email"]').value = email.value.trim();
+        form.querySelector('input[name="PhoneNumber"]').value = phone.value.trim();
+        form.querySelector('input[name="PassportNumber"]').value = passport.value.trim();
+
+        return true;
+    }
+</script>

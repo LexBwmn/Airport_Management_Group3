@@ -1,0 +1,222 @@
+﻿@model Fly_Away.Models.Ticket
+
+<h2 class="mb-2">Manage Booking</h2>
+<p class="text-muted mb-3">
+    Update passenger details for Ticket #@Model.Ticket_ID.
+</p>
+
+<div id="statusBox" class="alert alert-secondary p-2 mb-3" style="white-space: pre-wrap; display:none;"></div>
+
+<div class="card bg-transparent border-secondary">
+    <div class="card-body p-4">
+
+        <h5 class="mb-3">Passenger Details</h5>
+
+        <div class="fly-form-grid">
+            <div class="fly-field">
+                <label class="form-label">Passenger Name</label>
+                <input id="PassengerName"
+                       class="form-control form-control-sm"
+                       type="text"
+                       value="@Model.PassengerName"
+                       required
+                       maxlength="60"
+                       pattern="^[A-Za-z][A-Za-z\s'\-]{1,59}$"
+                       title="Letters/spaces only (2–60). Example: John Smith" />
+            </div>
+
+            <div class="fly-field">
+                <label class="form-label">Email</label>
+                <input id="Email"
+                       class="form-control form-control-sm"
+                       type="email"
+                       value="@Model.Email"
+                       required
+                       maxlength="100" />
+            </div>
+
+            <div class="fly-field">
+                <label class="form-label">Phone Number</label>
+                <input id="PhoneNumber"
+                       class="form-control form-control-sm"
+                       type="tel"
+                       inputmode="tel"
+                       value="@Model.PhoneNumber"
+                       required
+                       maxlength="20"
+                       pattern="^[0-9+\-\s()]{7,20}$"
+                       title="Allowed: digits, space, +, -, (, ). Length 7–20."
+                       oninput="filterPhone(this)" />
+                <small class="text-muted">Digits/spaces + ( ) - allowed.</small>
+            </div>
+
+            <div class="fly-field">
+                <label class="form-label">Passport Number</label>
+                <input id="PassportNumber"
+                       class="form-control form-control-sm"
+                       type="text"
+                       value="@Model.PassportNumber"
+                       required
+                       maxlength="20"
+                       pattern="^[A-Za-z0-9]{5,20}$"
+                       title="Letters+numbers only (5–20)."
+                       oninput="filterPassport(this)" />
+                <small class="text-muted">Letters + numbers only (5–20).</small>
+            </div>
+        </div>
+
+        <!-- ✅ IMPORTANT: Hidden FlightClass_ID so PUT always sends it -->
+        <input type="hidden" id="FlightClass_ID" value="@Model.FlightClass_ID" />
+
+        <hr class="my-4" />
+
+        <div class="d-flex gap-2 flex-wrap mt-2">
+            <button type="button" class="btn btn-outline-success btn-sm px-3" onclick="saveAllPut(@Model.Ticket_ID)">
+                Save all changes
+            </button>
+
+            <button type="button" class="btn btn-outline-danger btn-sm px-3" onclick="cancelDelete(@Model.Ticket_ID)">
+                Cancel booking
+            </button>
+
+            <button type="button" class="btn btn-outline-light btn-sm px-3" onclick="toggleAdvanced()">
+                Advanced
+            </button>
+        </div>
+
+        <div id="advancedBox" style="display:none;" class="mt-3">
+            <button type="button" class="btn btn-outline-light btn-sm" onclick="showOptions()">
+                Supported methods
+            </button>
+        </div>
+
+        <div class="mt-3">
+            <a href="/BookingsPage/Details/@Model.Ticket_ID">⬅ Back to Details</a>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    const statusBox = document.getElementById("statusBox");
+    const advancedBox = document.getElementById("advancedBox");
+
+    function showStatus(msg, isError = false) {
+        statusBox.style.display = "block";
+        statusBox.className = isError ? "alert alert-danger p-2 mb-3" : "alert alert-secondary p-2 mb-3";
+        statusBox.innerText = msg;
+    }
+
+    function toggleAdvanced() {
+        advancedBox.style.display = (advancedBox.style.display === "none") ? "block" : "none";
+    }
+
+    function filterPhone(el) {
+        el.value = el.value.replace(/[^0-9+\-\s()]/g, "");
+    }
+
+    function filterPassport(el) {
+        el.value = el.value.replace(/[^A-Za-z0-9]/g, "");
+    }
+
+    function getEl(id) { return document.getElementById(id); }
+
+    function validateAll() {
+        const name = getEl("PassengerName");
+        const email = getEl("Email");
+        const phone = getEl("PhoneNumber");
+        const passport = getEl("PassportNumber");
+        return name.reportValidity() && email.reportValidity() && phone.reportValidity() && passport.reportValidity();
+    }
+
+    function getPayloadFromInputs() {
+        return {
+            // ✅ REQUIRED for your API validation
+            FlightClass_ID: parseInt(getEl("FlightClass_ID").value, 10),
+
+            PassengerName: (getEl("PassengerName").value || "").trim(),
+            Email: (getEl("Email").value || "").trim(),
+            PhoneNumber: (getEl("PhoneNumber").value || "").trim(),
+            PassportNumber: (getEl("PassportNumber").value || "").trim()
+        };
+    }
+
+    async function saveAllPut(ticketId) {
+        try {
+            if (!validateAll()) {
+                showStatus("Fix validation errors above before saving.", true);
+                return;
+            }
+
+            const payload = getPayloadFromInputs();
+
+            if (!payload.FlightClass_ID || payload.FlightClass_ID < 1) {
+                showStatus("FlightClass_ID missing/invalid. Cannot save.", true);
+                return;
+            }
+
+            showStatus("Saving changes...");
+
+            const res = await fetch(`/api/bookings/${ticketId}`, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload),
+                credentials: "same-origin"
+            });
+
+            const text = await res.text();
+            if (!res.ok) {
+                showStatus(`Save failed (${res.status}): ${text}`, true);
+                if (res.status === 401) window.location.href = "/AuthPage/Login";
+                return;
+            }
+
+            showStatus("Saved successfully. Reloading...");
+            window.location.reload();
+        } catch (e) {
+            showStatus("Save failed: " + e, true);
+        }
+    }
+
+    async function cancelDelete(ticketId) {
+        if (!confirm("Cancel this booking? This will delete the ticket.")) return;
+
+        try {
+            showStatus("Cancelling booking...");
+
+            const res = await fetch(`/api/bookings/${ticketId}`, {
+                method: "DELETE",
+                credentials: "same-origin"
+            });
+
+            const text = await res.text();
+            if (!res.ok) {
+                showStatus(`Cancel failed (${res.status}): ${text}`, true);
+                if (res.status === 401) window.location.href = "/AuthPage/Login";
+                return;
+            }
+
+            showStatus("Booking cancelled. Redirecting...");
+            window.location.href = "/BookingsPage/MyBookings";
+        } catch (e) {
+            showStatus("Cancel failed: " + e, true);
+        }
+    }
+
+    async function showOptions() {
+        try {
+            showStatus("Checking supported methods...");
+
+            const res = await fetch("/api/bookings", {
+                method: "OPTIONS",
+                credentials: "same-origin"
+            });
+
+            const allow = res.headers.get("Allow") || "(Allow header not found)";
+            const bodyText = await res.text().catch(() => "");
+            showStatus(`Supported methods:\nAllow: ${allow}\nStatus: ${res.status}\nBody: ${bodyText}`);
+        } catch (e) {
+            showStatus("OPTIONS failed: " + e, true);
+        }
+    }
+</script>

@@ -24,7 +24,7 @@ public class BookingsController : ControllerBase
         return HttpContext.Session.GetInt32("AccountId");
     }
 
-    // GET /api/bookings (list tickets for logged-in user)
+    // GET /api/bookings
     [HttpGet]
     public async Task<ActionResult<List<TicketDto>>> GetMyBookings()
     {
@@ -34,9 +34,9 @@ public class BookingsController : ControllerBase
         var list = await _db.Tickets
             .AsNoTracking()
             .Where(t => t.Account_ID == accountId.Value)
-            .Include(t => t.Flight).ThenInclude(f => f!.Airline)
-            .Include(t => t.Flight).ThenInclude(f => f!.Source)
-            .Include(t => t.Flight).ThenInclude(f => f!.Destination)
+            .Include(t => t.Flight)!.ThenInclude(f => f!.Airline)
+            .Include(t => t.Flight)!.ThenInclude(f => f!.Source)
+            .Include(t => t.Flight)!.ThenInclude(f => f!.Destination)
             .Include(t => t.Seat)
             .Include(t => t.Gate)
             .Include(t => t.FlightClass)
@@ -64,7 +64,6 @@ public class BookingsController : ControllerBase
                 SeatType = t.Seat!.SeatType,
 
                 GateStatus = t.Gate!.Status,
-
                 TicketImageUrl = t.TicketImageUrl ?? ""
             })
             .ToListAsync();
@@ -82,9 +81,9 @@ public class BookingsController : ControllerBase
         var t = await _db.Tickets
             .AsNoTracking()
             .Where(x => x.Ticket_ID == ticketId && x.Account_ID == accountId.Value)
-            .Include(x => x.Flight).ThenInclude(f => f!.Airline)
-            .Include(x => x.Flight).ThenInclude(f => f!.Source)
-            .Include(x => x.Flight).ThenInclude(f => f!.Destination)
+            .Include(x => x.Flight)!.ThenInclude(f => f!.Airline)
+            .Include(x => x.Flight)!.ThenInclude(f => f!.Source)
+            .Include(x => x.Flight)!.ThenInclude(f => f!.Destination)
             .Include(x => x.Seat)
             .Include(x => x.Gate)
             .Include(x => x.FlightClass)
@@ -115,12 +114,11 @@ public class BookingsController : ControllerBase
             SeatType = t.Seat!.SeatType,
 
             GateStatus = t.Gate!.Status,
-
             TicketImageUrl = t.TicketImageUrl ?? ""
         });
     }
 
-    // POST /api/bookings (create ticket/booking)
+    // POST /api/bookings
     [HttpPost]
     public async Task<ActionResult> Create([FromBody] CreateBookingRequest req)
     {
@@ -158,13 +156,18 @@ public class BookingsController : ControllerBase
             Seat_ID = seat.Seat_ID,
             Gate_ID = gate.Gate_ID,
             Flight_ID = req.Flight_ID,
-            TicketImageUrl = $"/tickets/ticket_{0}.png" // placeholder (we’ll update after save)
+
+            PassengerName = req.PassengerName,
+            Email = req.Email,
+            PhoneNumber = req.PhoneNumber,
+            PassportNumber = req.PassportNumber,
+
+            TicketImageUrl = $"/tickets/ticket_{0}.png"
         };
 
         _db.Tickets.Add(ticket);
         await _db.SaveChangesAsync();
 
-        // Update url now that we have Ticket_ID
         ticket.TicketImageUrl = $"/tickets/ticket_{ticket.Ticket_ID}.png";
         await _db.SaveChangesAsync();
 
@@ -176,7 +179,7 @@ public class BookingsController : ControllerBase
         });
     }
 
-    // PUT /api/bookings/{ticketId} (full update - we only allow FlightClass_ID)
+    // PUT /api/bookings/{ticketId}
     [HttpPut("{ticketId:int}")]
     public async Task<ActionResult> Put(int ticketId, [FromBody] UpdateBookingRequest req)
     {
@@ -190,12 +193,16 @@ public class BookingsController : ControllerBase
         if (fc == null) return BadRequest(new { message = "Invalid FlightClass_ID" });
 
         ticket.FlightClass_ID = req.FlightClass_ID;
-        await _db.SaveChangesAsync();
+        ticket.PassengerName = req.PassengerName;
+        ticket.Email = req.Email;
+        ticket.PhoneNumber = req.PhoneNumber;
+        ticket.PassportNumber = req.PassportNumber;
 
+        await _db.SaveChangesAsync();
         return Ok(new { message = "Booking updated (PUT)", ticketId = ticket.Ticket_ID });
     }
 
-    // PATCH /api/bookings/{ticketId} (partial update - FlightClass_ID optional)
+    // PATCH /api/bookings/{ticketId}
     [HttpPatch("{ticketId:int}")]
     public async Task<ActionResult> Patch(int ticketId, [FromBody] PatchBookingRequest req)
     {
@@ -209,9 +216,13 @@ public class BookingsController : ControllerBase
         {
             var fc = await _db.FlightClasses.AsNoTracking().FirstOrDefaultAsync(x => x.FlightClass_ID == req.FlightClass_ID.Value);
             if (fc == null) return BadRequest(new { message = "Invalid FlightClass_ID" });
-
             ticket.FlightClass_ID = req.FlightClass_ID.Value;
         }
+
+        if (req.PassengerName != null) ticket.PassengerName = req.PassengerName;
+        if (req.Email != null) ticket.Email = req.Email;
+        if (req.PhoneNumber != null) ticket.PhoneNumber = req.PhoneNumber;
+        if (req.PassportNumber != null) ticket.PassportNumber = req.PassportNumber;
 
         await _db.SaveChangesAsync();
         return Ok(new { message = "Booking updated (PATCH)", ticketId = ticket.Ticket_ID });
@@ -227,7 +238,6 @@ public class BookingsController : ControllerBase
         var ticket = await _db.Tickets.FirstOrDefaultAsync(t => t.Ticket_ID == ticketId && t.Account_ID == accountId.Value);
         if (ticket == null) return NotFound(new { message = "Ticket not found" });
 
-        // OPTIONAL: delete PNG file if it exists
         if (!string.IsNullOrWhiteSpace(ticket.TicketImageUrl))
         {
             var relative = ticket.TicketImageUrl.TrimStart('/').Replace("/", Path.DirectorySeparatorChar.ToString());
@@ -248,6 +258,6 @@ public class BookingsController : ControllerBase
     public IActionResult Options()
     {
         Response.Headers.Allow = "GET,POST,PUT,PATCH,DELETE,OPTIONS";
-        return Ok();
+        return Ok(new { message = "Allowed methods returned in Allow header" });
     }
 }

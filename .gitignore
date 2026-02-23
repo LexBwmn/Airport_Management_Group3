@@ -23,3 +23,9 @@ Thumbs.db
 # ===== Docker =====
 *.env
 .env
+
+# Generated ticket images
+Fly-Away/wwwroot/tickets/*.png
+
+# Doxygen output
+Fly-Away/doxygen/

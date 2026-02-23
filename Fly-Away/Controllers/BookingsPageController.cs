@@ -24,10 +24,25 @@ public class BookingsPageController : Controller
 
     // POST: /BookingsPage/Create
     [HttpPost]
-    public async Task<IActionResult> Create(int flight_ID, int flightClass_ID)
+    public async Task<IActionResult> Create(
+        int flight_ID,
+        int flightClass_ID,
+        string PassengerName,
+        string Email,
+        string PhoneNumber,
+        string PassportNumber)
     {
         var accountId = GetAccountId();
         if (accountId == null) return RedirectToAction("Login", "AuthPage");
+
+        // basic validation (simple + safe)
+        if (string.IsNullOrWhiteSpace(PassengerName) ||
+            string.IsNullOrWhiteSpace(Email) ||
+            string.IsNullOrWhiteSpace(PhoneNumber) ||
+            string.IsNullOrWhiteSpace(PassportNumber))
+        {
+            return BadRequest("Passenger info is required.");
+        }
 
         var flight = await _db.Flights.AsNoTracking().FirstOrDefaultAsync(f => f.Flight_ID == flight_ID);
         if (flight == null) return BadRequest("Invalid Flight_ID");
@@ -60,6 +75,12 @@ public class BookingsPageController : Controller
             FlightClass_ID = flightClass_ID,
             Seat_ID = seat.Seat_ID,
             Gate_ID = gate.Gate_ID,
+
+            // passenger info
+            PassengerName = PassengerName.Trim(),
+            Email = Email.Trim(),
+            PhoneNumber = PhoneNumber.Trim(),
+            PassportNumber = PassportNumber.Trim(),
 
             // temporary
             TicketImageUrl = ""
@@ -135,7 +156,6 @@ public class BookingsPageController : Controller
         return RedirectToAction("Details", new { id = ticketId });
     }
 
-
     // GET: /BookingsPage/MyBookings
     public async Task<IActionResult> MyBookings()
     {
@@ -154,4 +174,26 @@ public class BookingsPageController : Controller
 
         return View(tickets);
     }
+    // GET: /BookingsPage/Manage/1
+    public async Task<IActionResult> Manage(int id)
+    {
+        var accountId = GetAccountId();
+        if (accountId == null) return RedirectToAction("Login", "AuthPage");
+
+        var t = await _db.Tickets
+            .AsNoTracking()
+            .Where(x => x.Ticket_ID == id && x.Account_ID == accountId.Value)
+            .Include(x => x.Flight)!.ThenInclude(f => f!.Airline)
+            .Include(x => x.Flight)!.ThenInclude(f => f!.Source)
+            .Include(x => x.Flight)!.ThenInclude(f => f!.Destination)
+            .Include(x => x.FlightClass)
+            .Include(x => x.Seat)
+            .Include(x => x.Gate)
+            .FirstOrDefaultAsync();
+
+        if (t == null) return NotFound();
+
+        return View(t); // will open Views/BookingsPage/Manage.cshtml
+    }
+
 }

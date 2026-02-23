@@ -10,14 +10,19 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - Fly_Away</title>
-
+    <title>@ViewData["Title"]FlyAway</title>
+    <link rel="icon" type="image/svg+xml" href="~/images/AirPlane.svg" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
 </head>
 <body>
     <header class="nav">
         <div class="nav-inner">
-            <a class="brand" href="/">Fly_Away</a>
+            <a class="brand" asp-controller="Home" asp-action="Index">
+                <img src="~/images/AirPlane.svg"
+                     alt="FlyAway"
+                     style="height:28px; width:28px; margin-right:10px;" />
+                FlyAway
+            </a>
 
             <nav class="nav-links">
                 <a href="/">Home</a>
@@ -46,7 +51,7 @@
 
     <footer class="footer">
         <div class="container footer-inner">
-            <span>© @DateTime.Now.Year - Fly_Away</span>
+            <span>© @DateTime.Now.Year FlyAway</span>
             <a href="/Home/Privacy">Privacy</a>
         </div>
     </footer>

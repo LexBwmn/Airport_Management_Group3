@@ -3,15 +3,17 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
 builder.Services.AddControllersWithViews();
 builder.Services.AddHttpContextAccessor();
 
-// DB (LocalDB now, Azure SQL later)
-builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// Session (simple auth)
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseSqlServer(
+        builder.Configuration.GetConnectionString("DefaultConnection"),
+        sql => sql.EnableRetryOnFailure()
+    ));
+
+// Session
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession(options =>
 {
@@ -19,29 +21,43 @@ builder.Services.AddSession(options =>
     options.Cookie.IsEssential = true;
     options.IdleTimeout = TimeSpan.FromHours(8);
 });
+
 builder.Services.AddSingleton<Fly_Away.Services.PasswordService>();
 
 var app = builder.Build();
-if (app.Environment.IsDevelopment())
+
+
+using (var scope = app.Services.CreateScope())
 {
-    using var scope = app.Services.CreateScope();
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    SeedData.Initialize(db);
+
+    db.Database.Migrate();
+
+    var seedEnabled =
+        app.Environment.IsDevelopment() ||
+        string.Equals(Environment.GetEnvironmentVariable("SEED_DATA"), "true", StringComparison.OrdinalIgnoreCase);
+
+    if (seedEnabled)
+    {
+        SeedData.Initialize(db);
+    }
 }
 
-// Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
     app.UseHsts();
 }
 
-app.UseHttpsRedirection();
-app.UseStaticFiles();
+if (app.Environment.IsDevelopment())
+{
+    app.UseHttpsRedirection();
+}
 
+app.UseStaticFiles();
 app.UseRouting();
 
-app.UseSession();        
+app.UseSession();
 app.UseAuthorization();
 
 app.MapControllers();

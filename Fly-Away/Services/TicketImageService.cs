@@ -43,10 +43,23 @@ public static class TicketImageService
             ctx.Fill(Color.LightGray, new Rectangle(0, 0, 900, 60));
             ctx.Draw(Color.Gray, 2, new Rectangle(10, 10, 880, 480));
 
-            // Fonts (simple default)
-            var titleFont = SystemFonts.CreateFont("Arial", 28, FontStyle.Bold);
-            var font = SystemFonts.CreateFont("Arial", 18, FontStyle.Regular);
-            var bold = SystemFonts.CreateFont("Arial", 18, FontStyle.Bold);
+            var fontPath = Path.Combine(webRootPath, "fonts", "Roboto-Regular.ttf");
+            if (!File.Exists(fontPath))
+            {
+               
+                fontPath = Path.Combine(webRootPath, "fonts", "DejaVuSans.ttf");
+            }
+            if (!File.Exists(fontPath))
+            {
+                throw new FileNotFoundException("No font file found in wwwroot/fonts. Add Roboto-Regular.ttf or DejaVuSans.ttf.", fontPath);
+            }
+
+            var fontCollection = new FontCollection();
+            var family = fontCollection.Add(fontPath);
+
+            var titleFont = family.CreateFont(28, FontStyle.Bold);
+            var font = family.CreateFont(18, FontStyle.Regular);
+            var bold = family.CreateFont(18, FontStyle.Bold);
 
             // Title
             ctx.DrawText("Fly-Away Ticket", titleFont, Color.Black, new PointF(20, 15));

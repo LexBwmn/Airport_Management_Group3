@@ -5,6 +5,29 @@
 <p><b>Ticket ID:</b> @Model.Ticket_ID</p>
 <p><b>Barcode:</b> @Model.Barcode</p>
 
+@if (!string.IsNullOrWhiteSpace(Model.TicketImageUrl))
+{
+    <div style="margin: 12px 0;">
+        <a href="@Model.TicketImageUrl" target="_blank">
+            <img src="@Model.TicketImageUrl"
+                 alt="Ticket @Model.Ticket_ID"
+                 style="max-width:420px; height:auto; border:1px solid #444; border-radius:10px;" />
+        </a>
+    </div>
+}
+else
+{
+    <p><i>Ticket image not generated yet.</i></p>
+}
+
+<hr />
+
+<h4>Passenger Info</h4>
+<p><b>Name:</b> @(!string.IsNullOrWhiteSpace(Model.PassengerName) ? Model.PassengerName : "(not provided)")</p>
+<p><b>Email:</b> @(!string.IsNullOrWhiteSpace(Model.Email) ? Model.Email : "(not provided)")</p>
+<p><b>Phone:</b> @(!string.IsNullOrWhiteSpace(Model.PhoneNumber) ? Model.PhoneNumber : "(not provided)")</p>
+<p><b>Passport:</b> @(!string.IsNullOrWhiteSpace(Model.PassportNumber) ? Model.PassportNumber : "(not provided)")</p>
+
 <hr />
 
 <p><b>Airline:</b> @Model.Flight!.Airline!.Name</p>
@@ -18,43 +41,79 @@
 
 <p><b>Class:</b> @Model.FlightClass!.SeatType</p>
 <p><b>Baggage:</b> @Model.FlightClass!.BaggageSize</p>
-
 <p><b>Seat:</b> @Model.Seat!.SeatNum (@Model.Seat!.SeatType)</p>
 <p><b>Gate:</b> @Model.Gate!.Status</p>
-
-<hr />
-
-@if (!string.IsNullOrWhiteSpace(Model.TicketImageUrl))
-{
-    <p><b>Ticket PNG:</b> <a href="@Model.TicketImageUrl" target="_blank">Open</a></p>
-    <img src="@Model.TicketImageUrl" style="max-width:500px;border:1px solid #ccc;" />
-}
-else
-{
-    <p><b>Ticket PNG:</b> Not generated</p>
-}
 
 <hr />
 <a href="/BookingsPage/MyBookings">⬅ Back to My Bookings</a>
 
 <hr />
-<h3>Manage Booking</h3>
 
-<form method="post" action="/BookingsPage/Cancel/@Model.Ticket_ID" onsubmit="return confirm('Cancel this booking?');">
-    <button type="submit">Cancel Booking</button>
-</form>
+<div class="card bg-transparent border-secondary">
+    <div class="card-body p-4">
 
-<br />
+        <h5 class="mb-2">Quick Class Change</h5>
+        <p class="text-muted mb-3">Use this if you only want to change seat class.</p>
 
-<form method="post" action="/BookingsPage/ChangeClass">
-    <input type="hidden" name="ticketId" value="@Model.Ticket_ID" />
+        <div id="statusBox" class="alert alert-secondary p-2 mb-3" style="white-space: pre-wrap; display:none;"></div>
 
-    <label>Change Class:</label>
-    <select name="flightClassId">
-        <option value="1">Economy</option>
-        <option value="2">Business</option>
-        <option value="3">First</option>
-    </select>
+        <div class="fly-field" style="max-width: 320px;">
+            <label class="form-label">Seat Class</label>
+            <select id="FlightClass_ID" class="form-select form-select-sm">
+                <option value="1" selected="@(Model.FlightClass_ID == 1)">Economy</option>
+                <option value="2" selected="@(Model.FlightClass_ID == 2)">Business</option>
+                <option value="3" selected="@(Model.FlightClass_ID == 3)">First</option>
+            </select>
+        </div>
 
-    <button type="submit">Update</button>
-</form>
+        <div class="d-flex gap-2 flex-wrap mt-3">
+            <button type="button" class="btn btn-outline-warning btn-sm px-3" onclick="quickClassPatch(@Model.Ticket_ID)">
+                Change class
+            </button>
+
+            <a class="btn btn-outline-light btn-sm px-3" href="/BookingsPage/Manage/@Model.Ticket_ID">
+                Manage Booking
+            </a>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    const statusBox = document.getElementById("statusBox");
+
+    function showStatus(msg, isError = false) {
+        statusBox.style.display = "block";
+        statusBox.className = isError ? "alert alert-danger p-2 mb-3" : "alert alert-secondary p-2 mb-3";
+        statusBox.innerText = msg;
+    }
+
+    async function quickClassPatch(ticketId) {
+        try {
+            const payload = {
+                FlightClass_ID: parseInt(document.getElementById("FlightClass_ID").value, 10)
+            };
+
+            showStatus("Updating class...");
+
+            const res = await fetch(`/api/bookings/${ticketId}`, {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload),
+                credentials: "same-origin"
+            });
+
+            const text = await res.text();
+            if (!res.ok) {
+                showStatus(`Class update failed (${res.status}): ${text}`, true);
+                if (res.status === 401) window.location.href = "/AuthPage/Login";
+                return;
+            }
+
+            showStatus("Class updated. Reloading...");
+            window.location.reload();
+        } catch (e) {
+            showStatus("Class update failed: " + e, true);
+        }
+    }
+</script>

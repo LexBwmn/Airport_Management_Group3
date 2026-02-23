@@ -15,8 +15,7 @@ else
             <th>From</th>
             <th>To</th>
             <th>Class</th>
-            <th>Barcode</th>
-            <th>Ticket Image</th>
+            <th>Ticket</th>
             <th></th>
         </tr>
 
@@ -28,19 +27,22 @@ else
                 <td>@t.Flight!.Source!.Name</td>
                 <td>@t.Flight!.Destination!.Name</td>
                 <td>@t.FlightClass!.SeatType</td>
-                <td>@t.Barcode</td>
-               <td>
-                @if (!string.IsNullOrWhiteSpace(t.TicketImageUrl))
-                {
-                    <a href="@t.TicketImageUrl" target="_blank">Open PNG</a>
-                    <br />
-                    <img src="@t.TicketImageUrl" style="max-width:220px;border:1px solid #ccc;margin-top:6px;" />
-                }
-                else
-                {
-                    <span>-</span>
-                }
-               </td>
+
+                <td>
+                    @if (!string.IsNullOrWhiteSpace(t.TicketImageUrl))
+                    {
+                        <a href="@t.TicketImageUrl" target="_blank">
+                            <img src="@t.TicketImageUrl"
+                                 alt="Ticket @t.Ticket_ID"
+                                 style="max-width:160px; height:auto; border:1px solid #444; border-radius:6px;" />
+                        </a>
+                    }
+                    else
+                    {
+                        <span>Not generated</span>
+                    }
+                </td>
+
                 <td>
                     <a href="/BookingsPage/Details/@t.Ticket_ID">View</a>
                 </td>
