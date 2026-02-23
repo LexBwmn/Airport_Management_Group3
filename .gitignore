@@ -27,5 +27,3 @@ Thumbs.db
 # Generated ticket images
 Fly-Away/wwwroot/tickets/*.png
 
-# Doxygen output
-Fly-Away/doxygen/

@@ -1,0 +1,14 @@
+var searchData=
+[
+  ['the_20mit_20license_20mit_0',['The MIT License (MIT)',['../md_wwwroot_2lib_2jquery-validation_2_l_i_c_e_n_s_e.html',1,'']]],
+  ['ticket_1',['Ticket',['../class_fly___away_1_1_models_1_1_ticket.html',1,'Fly_Away::Models']]],
+  ['ticket_2ecs_2',['Ticket.cs',['../_ticket_8cs.html',1,'']]],
+  ['ticket_5fid_3',['Ticket_ID',['../class_fly___away_1_1_d_t_os_1_1_ticket_dto.html#a6fb13c0096706d117e7eed567cd5f2c4',1,'Fly_Away.DTOs.TicketDto.Ticket_ID'],['../class_fly___away_1_1_models_1_1_ticket.html#a560c7f880f384dbfe1751a0f1c65e3bc',1,'Fly_Away.Models.Ticket.Ticket_ID']]],
+  ['ticketdto_4',['TicketDto',['../class_fly___away_1_1_d_t_os_1_1_ticket_dto.html',1,'Fly_Away::DTOs']]],
+  ['ticketdto_2ecs_5',['TicketDto.cs',['../_ticket_dto_8cs.html',1,'']]],
+  ['ticketimageservice_2ecs_6',['TicketImageService.cs',['../_ticket_image_service_8cs.html',1,'']]],
+  ['ticketimageurl_7',['TicketImageUrl',['../class_fly___away_1_1_d_t_os_1_1_ticket_dto.html#ad0623adda25bebb5de3fac18d53c1f92',1,'Fly_Away.DTOs.TicketDto.TicketImageUrl'],['../class_fly___away_1_1_models_1_1_ticket.html#a561870febbe8c531cac8cf7692eac19f',1,'Fly_Away.Models.Ticket.TicketImageUrl']]],
+  ['tickets_8',['Tickets',['../class_fly___away_1_1_data_1_1_app_db_context.html#a84ff604e9f1b2c59ab124bf055bfaf4a',1,'Fly_Away.Data.AppDbContext.Tickets'],['../class_fly___away_1_1_models_1_1_flight.html#ab9e04aedf77e800a0b9b2a935498f0a8',1,'Fly_Away.Models.Flight.Tickets']]],
+  ['timearrival_9',['TimeArrival',['../class_fly___away_1_1_d_t_os_1_1_flight_dto.html#aa7beb080e93469b91fb37fddaaf3a2fa',1,'Fly_Away.DTOs.FlightDto.TimeArrival'],['../class_fly___away_1_1_d_t_os_1_1_ticket_dto.html#ac5fc555c47ae9b1526da474a45eb25b1',1,'Fly_Away.DTOs.TicketDto.TimeArrival'],['../class_fly___away_1_1_models_1_1_flight.html#ab655fecda734365ece0ababaecd642a8',1,'Fly_Away.Models.Flight.TimeArrival'],['../class_fly___away_1_1_view_models_1_1_flight_details_view_model.html#a5bd88999e84ebe96034c770932a95ecd',1,'Fly_Away.ViewModels.FlightDetailsViewModel.TimeArrival']]],
+  ['timedeparture_10',['TimeDeparture',['../class_fly___away_1_1_d_t_os_1_1_flight_dto.html#a1dab076e00f7b17bf7d3099250a42924',1,'Fly_Away.DTOs.FlightDto.TimeDeparture'],['../class_fly___away_1_1_d_t_os_1_1_ticket_dto.html#af02cccb5660cbc4fc89cebba7f05a306',1,'Fly_Away.DTOs.TicketDto.TimeDeparture'],['../class_fly___away_1_1_models_1_1_flight.html#adec6ce135a30d0dce8fe239eb8c25d40',1,'Fly_Away.Models.Flight.TimeDeparture'],['../class_fly___away_1_1_view_models_1_1_flight_details_view_model.html#a84aa1b40ce5ec8aff391e3ffa86cf9e9',1,'Fly_Away.ViewModels.FlightDetailsViewModel.TimeDeparture'],['../class_fly___away_1_1_view_models_1_1_flight_view_model.html#ac9db34a9084213db99575b801acc1c98',1,'Fly_Away.ViewModels.FlightViewModel.TimeDeparture']]]
+];
