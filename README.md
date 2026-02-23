@@ -1,161 +1,315 @@
-# ✈️ Fly-Away — Flight Booking System (ASP.NET Core MVC)
+# FlyAway – Airport Booking Management System
 
-Fly-Away is a full-stack **ASP.NET Core MVC flight booking application** that allows users to browse flights, book tickets, manage bookings, and generate downloadable ticket images.  
-This project demonstrates **MVC architecture, authentication, session handling, database integration, and UI rendering**.
+FlyAway is a containerized Airport / Flight Booking Management web application built using ASP.NET Core MVC and Entity Framework Core.  
+The system supports full booking lifecycle operations (Create, View, Update, Delete), REST-compliant API endpoints, and ticket image generation.
+
+This project was developed as part of a Semester 6 academic software engineering course and demonstrates layered architecture, database persistence, and Docker-based deployment.
 
 ---
 
-## 📌 Project Overview
+## 1. System Overview
 
-Fly-Away simulates a simplified airline booking platform where users can:
+FlyAway allows users to:
 
-- Register and log in
+- Register and authenticate accounts
 - Browse available flights
-- View flight details
-- Select travel class (Economy / Business / First)
-- Book a flight
-- Automatically generate a ticket PNG
-- View, update, or cancel bookings
+- Create flight bookings with passenger information
+- View and manage bookings
+- Update bookings using PUT and PATCH
+- Cancel bookings (DELETE)
+- Generate and display downloadable ticket images
+- Interact with REST API endpoints
+- Run the entire system using Docker (Web + SQL Server)
 
-The project focuses on **backend correctness, MVC flow, and functional UI**.
-
----
-
-## 🧱 Technology Stack
-
-| Layer | Technology |
-|-----|-----------|
-| Backend | ASP.NET Core MVC (.NET 8) |
-| ORM | Entity Framework Core |
-| Database | SQL Server (LocalDB) |
-| Authentication | Session-based login |
-| Image Generation | ImageSharp |
-| Frontend | Razor Views + CSS |
-| Deployment | Docker |
-| Version Control | Git + GitHub |
+The application demonstrates proper separation of concerns across UI, API, service, and data layers.
 
 ---
 
-## 🏗️ Architecture
+## 2. Architecture Overview
 
-This project follows the **Model–View–Controller (MVC)** pattern:
+The system follows a layered architecture:
 
-- **Models** — Database entities (Flight, Ticket, Account, Seat, Gate, etc.)
-- **Views** — Razor `.cshtml` UI pages
-- **Controllers** — Request handling and business logic
-- **Services** — Password hashing and ticket image generation
-- **wwwroot** — Static assets (CSS, ticket images)
+### Presentation Layer
+- Razor Views (MVC)
+- Bootstrap styling
+- Custom CSS (wwwroot/css/site.css)
+- UI actions invoke MVC controllers and API endpoints
 
----
+### API Layer
+- RESTful controllers under `/api/*`
+- Supports HTTP verbs:
+  - GET
+  - POST
+  - PUT
+  - PATCH
+  - DELETE
+  - OPTIONS
+- JSON request/response handling
 
-## 🔐 Authentication Flow
+### Business / Application Layer
+- Controllers manage validation and request handling
+- Services (e.g., TicketImageService, PasswordService)
+- DTOs define structured API payloads
 
-- Users can **register** and **log in**
-- Passwords are **hashed** before storage
-- Login state is maintained using **ASP.NET Sessions**
-- Protected pages redirect unauthenticated users to Login
+### Data Layer
+- Entity Framework Core
+- AppDbContext
+- SQL Server 2022
+- Migrations for schema evolution
+- Seed data initialization
 
----
-
-## ✈️ Booking Flow
-
-1. User logs in
-2. User views **Available Flights**
-3. Selects a flight → opens **Flight Details**
-4. Chooses travel class
-5. Booking is created automatically
-6. Seat and gate are assigned
-7. Ticket PNG is generated and stored
-8. Booking appears under **My Bookings**
-
----
-
-## 🎟️ Ticket Image Generation
-
-Each booking generates a **PNG ticket** containing:
-
-- Ticket ID
-- Barcode
-- Airline
-- Route
-- Departure & arrival
-- Class, seat, and gate info
-
-Generated tickets are stored under:
-wwwroot/tickets/ticket_{TicketID}.png
-
-
-They are viewable directly from the UI.
+### File Generation Layer
+- Ticket images generated using ImageSharp
+- Stored under: Fly-Away/wwwroot/tickets/
+- - URL persisted in database as `TicketImageUrl`
 
 ---
 
-## 🧭 Key Pages & Routes
+## 3. Technology Stack
 
-| Page | Route |
-|----|------|
-| Home / Flights | `/` |
-| Flight Details | `/FlightsPage/Details/{id}` |
-| Login | `/AuthPage/Login` |
-| Register | `/AuthPage/Register` |
-| My Bookings | `/BookingsPage/MyBookings` |
-| Booking Details | `/BookingsPage/Details/{id}` |
+Backend:
+- ASP.NET Core 8 (MVC + Web API)
+- C#
+- Entity Framework Core
+- SQL Server 2022
 
----
+Frontend:
+- Razor Views
+- Bootstrap
+- Custom CSS
 
-## 🧪 Seed Data
+Image Generation:
+- SixLabors.ImageSharp
 
-The database is pre-populated with:
+Database:
+- Microsoft SQL Server
+- EF Core Migrations
 
-- Airlines
-- Airports
-- Flights
-- Seats
-- Gates
-- Flight classes
-
-This allows the application to be tested immediately after startup.
+DevOps / Deployment:
+- Docker
+- Docker Compose
 
 ---
 
-## 🐳 Docker Support
-
-The project includes Docker configuration for containerized execution.
-
-### Build & Run
-
-```bash
-docker build -t fly-away .
-docker run -p 5000:8080 fly-away
-
-Or using Docker Compose:
-docker-compose up --build
-
-📂 Project Structure
-Fly-Away/
+## 4. Project Structure
+irport_Management_Group3/
 │
+├── Fly-Away.sln
+├── docker-compose.yml
+│
+└── Fly-Away/
 ├── Controllers/
-├── Models/
-├── Views/
-├── Services/
-├── Data/
 ├── DTOs/
-├── ViewModels/
+├── Data/
+├── Models/
+├── Services/
+├── Views/
 ├── wwwroot/
-│   ├── css/
-│   ├── tickets/
-│
+│ ├── css/
+│ ├── images/
+│ ├── fonts/
+│ └── tickets/
+├── Migrations/
 ├── Program.cs
-├── Dockerfile
-└── README.md
+├── appsettings.json
+└── Dockerfile
 
-screenshots of the App:
 
-<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/e90c6c29-1671-496d-b7c3-b244496f127e" />
+---
 
-<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/7aecf063-5257-4bc6-9dde-b81d51476e77" />
+## 5. Running the Application with Docker (Recommended)
 
-<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/f6b22451-892d-4e49-9ebd-e66fede65469" />
+### Prerequisites
+- Docker Desktop installed and running
+- Ports available:
+  - 8080 (Web)
+  - 1433 (SQL Server)
 
-<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/bda6b2be-a1dd-4c97-a860-3eda247737fc" />
+### Step 1 – Build and Start Containers
 
-<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/cd6bba27-d6df-4f79-b89b-b24c9a68ed61" />
+From the repository root:
+docker compose up -d --build
+
+### Step 2 – Verify Containers
+
+
+docker compose ps
+
+
+Expected services:
+- flyaway-web
+- flyaway-db
+
+### Step 3 – Access Application
+
+Open in browser:
+
+http://localhost:8080
+
+
+### Step 4 – Stop Containers
+
+docker compose down
+
+
+### Reset Database (Fresh State)
+
+docker compose down -v
+docker compose up -d --build
+
+
+---
+
+## 6. Running Without Docker (Optional)
+
+### Prerequisites
+- .NET 8 SDK
+- SQL Server (LocalDB or full SQL Server)
+
+### Update Connection String
+Edit `appsettings.json` to point to your SQL instance.
+
+### Apply Migrations
+dotnet ef database update
+### Run Application
+dotnet run
+
+---
+
+## 7. Environment Configuration
+
+Docker environment variables typically include:
+
+
+ASPNETCORE_ENVIRONMENT=Production
+ConnectionStrings__DefaultConnection=Server=db,1433;Database=FlyAwayDb;User Id=sa;Password=YourStrong!Passw0rd;TrustServerCertificate=True;
+SEED_DATA=true
+
+
+---
+
+## 8. REST API Endpoints
+
+### Bookings API
+
+Base Route:
+
+/api/bookings
+
+
+| Method  | Route | Description |
+|----------|--------|-------------|
+| GET | /api/bookings | Get logged-in user bookings |
+| GET | /api/bookings/{id} | Get specific booking |
+| POST | /api/bookings | Create booking |
+| PUT | /api/bookings/{id} | Replace booking |
+| PATCH | /api/bookings/{id} | Partial update |
+| DELETE | /api/bookings/{id} | Delete booking |
+| OPTIONS | /api/bookings | List supported methods |
+
+---
+
+### Flights API
+
+
+/api/flights
+
+
+- GET /api/flights
+- GET /api/flights/search
+
+---
+
+### FlightClasses API
+
+
+/api/flightclasses
+
+
+- GET /api/flightclasses
+
+---
+
+### Authentication API
+
+
+/api/auth
+
+
+- POST /api/auth/register
+- POST /api/auth/login
+- POST /api/auth/logout
+- GET /api/auth/me
+
+---
+
+## 9. Sample JSON Payloads
+
+### Create Booking (POST)
+
+```json
+{
+  "flight_ID": 1,
+  "flightClass_ID": 1,
+  "passengerName": "John Smith",
+  "email": "john@example.com",
+  "phoneNumber": "+1 519 555 1234",
+  "passportNumber": "A1234567"
+}
+Update Booking (PUT)
+{
+  "flightClass_ID": 2,
+  "passengerName": "John Smith",
+  "email": "john@example.com",
+  "phoneNumber": "+1 519 555 1234",
+  "passportNumber": "A1234567"
+}
+Partial Update (PATCH)
+{
+  "flightClass_ID": 3
+}
+```
+10. Database Persistence
+
+Bookings are stored in SQL Server.
+
+Ticket image path is stored in TicketImageUrl.
+
+EF Core Migrations manage schema updates.
+
+Data remains persistent across container restarts (unless volume removed).
+
+11. Ticket Image Generation
+
+Upon successful booking:
+
+TicketImageService generates PNG ticket
+
+File saved to:
+
+wwwroot/tickets/ticket_{Ticket_ID}.png
+
+URL stored in database
+
+Displayed in:
+
+My Bookings
+
+Booking Details page
+
+12. Testing Coverage
+
+The system includes documented:
+
+Application-level tests
+
+Functional tests
+
+Integration tests
+
+REST compliance verification
+
+Database persistence validation
+
+All major CRUD flows were verified through containerized execution.
+
